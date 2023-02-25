@@ -72,14 +72,12 @@
   </style>
 
   <x-slot name="appTitle">
-    {{ __('larder : recipes') }}
+    {{ __('Recipes') }}
   </x-slot>
 
   <x-slot name="appName">
-    {{ __('larder : recipes') }}
+    {{ __('Recipes') }}
   </x-slot>
-
-  <x-headerMenu></x-headerMenu>
 
   <x-Recipes.controls :recipes="$recipes" :foods="$foods"></x-Recipes.controls>
 

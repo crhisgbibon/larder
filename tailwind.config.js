@@ -10,9 +10,9 @@ module.exports = {
 
     theme: {
         extend: {
-            fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
-            },
+          fontFamily: {
+            'work': ['Work Sans', 'sans-serif'],
+          },
         },
     },
 

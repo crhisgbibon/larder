@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('foods', function (Blueprint $table) {
-            $table->id();
+            $table->id()->unique();
 
             $table->integer('userID');
             $table->string('name', 255);
@@ -43,8 +43,6 @@ return new class extends Migration
             $table->boolean('vegan');
             $table->boolean('vegetarian');
             $table->boolean('hiddenRow');
-
-            $table->timestamps();
         });
     }
 

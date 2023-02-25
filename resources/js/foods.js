@@ -88,6 +88,9 @@ const EditScreen = document.getElementById("EditScreen");
 const Add = document.getElementById("Add");
 const Close = document.getElementById("Close");
 
+const Alphabet = document.getElementById("Alphabet");
+const Vendor = document.getElementById("Vendor");
+
 const EditScreenName = document.getElementById("EditScreenName");
 const EditScreenVendor = document.getElementById("EditScreenVendor");
 const EditScreenURL = document.getElementById("EditScreenURL");
@@ -113,11 +116,13 @@ const EditScreenAlcohol = document.getElementById("EditScreenAlcohol");
 
 // Assignments
 messageBox.onclick = function(){ TogglePanel(messageBox, true, true); };
-Find.onkeyup = function(){ Filter("food", Find.value); };
+Find.onkeyup = function(){ Filter("foodsearch", Find.value); };
 New.onclick = function(){ TogglePanel(EditScreen, true, true); };
 Close.onclick = function(){ TogglePanel(EditScreen, true, true); };
 
 Add.onclick = function(){ AddNewFood(); };
+Alphabet.onchange = function(){ ChangeLetter(); };
+Vendor.onchange = function(){ FilterVendor(); };
 
 // target amounts
 let tCalories, tCarbohydrate, tSugar, tFat, tSaturated, tProtein, tFibre, tSalt, tAlcohol;
@@ -298,6 +303,35 @@ function Filter(dataset, inputFilter)
       continue;
     }
     a = li[i].dataset.name.toString();
+    if(a.toUpperCase().indexOf(filter) > -1)
+    {
+      li[i].style.display = "";
+    }
+    else
+    {
+      li[i].style.display = "none";
+    }
+  }
+}
+
+function FilterVendor()
+{
+  let dataset = 'foodsearch';
+  let vendor = Vendor.value;
+  if(vendor === 'All') vendor = '';
+  let filter, li, len, a, i;
+  filter = vendor.toUpperCase();
+  if(filter === "-1") filter = "";
+  li = document.getElementsByClassName(dataset);
+  len = li.length;
+  for(i = 0; i < len; i++)
+  {
+    if(filter === "")
+    {
+      li[i].style.display = "";
+      continue;
+    }
+    a = li[i].dataset.vendor.toString();
     if(a.toUpperCase().indexOf(filter) > -1)
     {
       li[i].style.display = "";
@@ -508,6 +542,38 @@ function UpdateStat(index)
   pAlcohol.innerHTML = percentAlcohol.toFixed(2);
 }
 
+function ChangeLetter()
+{
+  let data = [
+    Alphabet.value,
+  ];
+
+  $.ajax(
+  {
+    method: "POST",
+    url: '/foods/ChangeLetter',
+    headers:
+    {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    data:
+    {
+      data:data
+    },
+    success:function(result)
+    {
+      MessageBox("Letter Changed.");
+      Display.innerHTML = result;
+      ReAssign();
+      FilterVendor();
+    },
+    error:function()
+    {
+      MessageBox("Error.");
+    }
+  });
+}
+
 function ClearEditScreen()
 {
   EditScreenName.value = "";
@@ -559,6 +625,7 @@ function AddNewFood()
 
     EditScreenSalt.value.trim(),
     EditScreenAlcohol.value.trim(),
+    Alphabet.value,
   ];
 
   $.ajax(
@@ -575,14 +642,12 @@ function AddNewFood()
     },
     success:function(result)
     {
-      console.log(result);
       MessageBox("Food Added.");
       Display.innerHTML = result;
       ReAssign();
     },
-    error:function(result)
+    error:function()
     {
-      console.log(result);
       MessageBox("Error.");
     }
   });
@@ -648,6 +713,7 @@ function DeleteFood(id)
 
   let data = [
     id,
+    Alphabet.value,
   ];
 
   $.ajax(
@@ -787,4 +853,55 @@ function ReAssign()
     let id = deletefood[i].dataset.i;
     deletefood[i].onclick = function() { AnimatePop(deletefood[i]); DeleteFood(id); };
   }
+
+  Get = document.getElementById("Get");
+  Get.onclick = function() { GetURLFromPHP(EditScreenURL.value) };
+}
+
+let Get = document.getElementById("Get");
+Get.onclick = function() { GetURLFromPHP(EditScreenURL.value) };
+
+function GetURLFromPHP(url)
+{
+  let type = EditScreenVendor.value;
+  $.ajax(
+  {
+    method: "POST",
+    url: "/foods/GetScrape" + type,
+    timeout:5000,
+    headers:
+    {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    data:
+    {
+      url
+    },
+    success:function(result)
+    {
+      EditScreenName.value = result.answer.name;
+      EditScreenPrice.value = result.answer.price;
+      EditScreenWeight.value = result.answer.weight;
+
+      EditScreenServings.value = result.answer.servings;
+      EditScreenExpiry.value = result.answer.expiry;
+      EditScreenPer.value = result.answer.per;
+
+      EditScreenCalories.value = result.answer.calories;
+      EditScreenCarbohydrate.value = result.answer.carbohydrate;
+      EditScreenSugar.value = result.answer.sugar;
+
+      EditScreenFat.value = result.answer.fat;
+      EditScreenSaturated.value = result.answer.saturated;
+      EditScreenProtein.value = result.answer.protein;
+
+      EditScreenFibre.value = result.answer.fibre;
+      EditScreenSalt.value = result.answer.salt;
+      EditScreenAlcohol.value = result.answer.alcohol;
+    },
+    error:function()
+    {
+      MessageBox('Error.');
+    }
+  });
 }

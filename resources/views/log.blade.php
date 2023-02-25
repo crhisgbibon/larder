@@ -68,14 +68,12 @@
   </style>
 
   <x-slot name="appTitle">
-    {{ __('larder : log') }}
+    {{ __('Log') }}
   </x-slot>
 
   <x-slot name="appName">
-    {{ __('larder : log') }}
+    {{ __('Log') }}
   </x-slot>
-
-  <x-headerMenu></x-headerMenu>
 
   <div id="Controls">
     <x-Log.controls :day="$day" :logs="$logs" :totals="$totals" :targets="$targets" :profile="$profile"></x-Log.controls>

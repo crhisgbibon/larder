@@ -4,7 +4,7 @@
 
 @foreach($foods as $food)
 
-<div class="flex flex-col justify-center items-center w-full max-w-2xl mx-auto my-2">
+<div class="foodsearch flex flex-col justify-center items-center w-full max-w-2xl mx-auto my-2" data-name='{{$food->name}}' data-vendor='{{$food->vendor}}'>
 
   <div class="food flex flex-col justify-center items-center w-full max-w-2xl mx-auto" data-search='{{$food->id}}' data-name='{{$food->name}}'>
     <div class="flex flex-row justify-center items-center w-full mx-2 bg-zinc-100 border-y md:border-x border-zinc-400">
@@ -12,8 +12,8 @@
         <img src="{{ asset('storage/Assets/eyeLight.svg') }}" style="width:75%;height:75%;max-width:30px;max-height:30px">
       </button>
       <input class="text-left mx-2 w-full p-2 bg-transparent border-0" type="text" id="{{$food->id}}EditScreenName" value="{{$food->name}}">
-      <input class="text-left mx-2 w-32 p-2 bg-transparent border-0" type="text" id="{{$food->id}}EditScreenName" value="{{$food->vendor}}">
-      <button class="updatefood mx-2 flex justify-center items-center" data-i={{$food->id}}>
+      <input class="text-left mx-2 w-20 p-2 bg-transparent border-0" type="text" id="{{$food->id}}EditScreenName" value="{{$food->vendor}}">
+      <button class="updatefood mx-2 flex justify-center items-center" data-i={{$food->id}} style='min-width: 5%'>
         <img src="{{ asset('storage/Assets/saveLight.svg') }}" style="width:75%;height:75%;max-width:30px;max-height:30px">
       </button>
     </div>
@@ -189,13 +189,13 @@
     <div id="{{$food->id}}Edit" class="flex flex-col justify-center items-center w-full mx-2 border-b md:border-x border-zinc-400" style="display:none;">
       <div class="my-2 w-full max-w-xl flex flex-row justify-center items-center">
         <label class="flex justify-center items-center mx-2 w-24" for="{{$food->id}}EditScreenVendor">{{ __('Vendor:') }}</label>
-        <input class="text-center mx-2 w-24" type="text" value="{{$food->vendor}}" id="{{$food->id}}EditScreenVendor">
-        <div class="ml-2">{{ __('£') }}</div>
+        <input class="text-center mx-2 w-48" type="text" value="{{$food->vendor}}" id="{{$food->id}}EditScreenVendor">
+        <div class="ml-2">{{ __('') }}</div>
       </div>
       <div class="my-2 w-full max-w-xl flex flex-row justify-center items-center">
         <label class="flex justify-center items-center mx-2 w-24" for="{{$food->id}}EditScreenURL">{{ __('URL:') }}</label>
-        <input class="text-center mx-2 w-24" type="text" value="{{$food->url}}" id="{{$food->id}}EditScreenURL">
-        <div class="ml-2">{{ __('£') }}</div>
+        <input class="text-center mx-2 w-48" type="text" value="{{$food->url}}" id="{{$food->id}}EditScreenURL">
+        <div class="ml-2">{{ __('') }}</div>
       </div>
       <div class="my-2 w-full max-w-xl flex flex-row justify-center items-center">
         <label class="flex justify-center items-center mx-2 w-24" for="{{$food->id}}EditScreenPrice">{{ __('Price:') }}</label>

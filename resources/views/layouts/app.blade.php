@@ -9,28 +9,27 @@
       @if (isset($appTitle))
         {{ $appTitle }}
       @else
-        {{ config('app.name', 'crhisgbibon') }}
+        {{ config('app.name', '') }}
       @endif
     </title>
-
-    <!-- Fonts -->
-    <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
 
     <!-- Add ins -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
 
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans&display=swap" rel="stylesheet">
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/vh.js'])
   </head>
-    <body class="font-sans antialiased">
-      <div class="min-h-screen">
-        
-        @include('layouts.navigation')
+  <body class="antialiased font-sans min-h-screen max-h-screen">
+    @include('layouts.navigation')
 
-        <!-- Page Content -->
-        <main class="antialiased">
-          {{ $slot }}
-        </main>
-      </div>
-    </body>
+    <!-- Page Content -->
+    <main class="antialiased">
+      {{ $slot }}
+    </main>
+  </body>
 </html>

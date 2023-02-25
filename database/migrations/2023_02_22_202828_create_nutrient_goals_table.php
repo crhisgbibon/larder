@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('nutrient_goals', function (Blueprint $table) {
-            $table->id();
+            $table->id()->unique();
 
-            $table->integer('userID');
+            $table->integer('userID')->unique();
             $table->float('carbohydrate');
             $table->float('sugar');
 

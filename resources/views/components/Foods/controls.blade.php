@@ -1,25 +1,77 @@
 @isset($foods)
 
 <div class="flex flex-row justify-center items-center w-full max-w-2xl mx-auto" style="height:calc(var(--vh) * 7.5)">
+  <select id='Alphabet' class='flex justify-center items-center w-24 text-center'>
+
+    <option selected>A</option>
+    <option>B</option>
+    <option>C</option>
+
+    <option>D</option>
+    <option>E</option>
+    <option>F</option>
+
+    <option>G</option>
+    <option>H</option>
+    <option>I</option>
+
+    <option>J</option>
+    <option>K</option>
+    <option>L</option>
+
+    <option>M</option>
+    <option>N</option>
+    <option>O</option>
+
+    <option>P</option>
+    <option>Q</option>
+    <option>R</option>
+
+    <option>S</option>
+    <option>T</option>
+    <option>U</option>
+
+    <option>V</option>
+    <option>W</option>
+    <option>X</option>
+
+    <option>Y</option>
+    <option>Z</option>
+    <option>0-9</option>
+
+    <option>All</option>
+
+  </select>
+  <select id='Vendor' class='flex justify-center items-center w-24 text-center'>
+
+    <option>All</option>
+
+    @isset($vendors)
+
+      @foreach($vendors as $vendor)
+
+        <option>{{$vendor->vendor}}</option>
+
+      @endforeach
+
+    @endisset
+
+  </select>
   <input class="w-full h-11/12" type="text" id="Find" placeholder="Search..." style="width:45%">
   <button class="mx-2 flex justify-center items-center" id="New" style="width:10%">
     <img src="{{ asset('storage/Assets/plusLight.svg') }}" style="width:75%;height:75%;max-width:30px;max-height:30px">
   </button>
 </div>
 
-<div id="Display" class="overflow-y-auto" style="height:calc(var(--vh) * 75)">
+<div id="Display" class="overflow-y-auto" style="height:calc(var(--vh) * 85);top:calc(var(--vh) * 15)">
   @isset($foods)
     <x-Foods.data :foods="$foods"></x-Foods.data>
   @endisset
 </div>
 
-<div id="EditScreen">
+<div id="EditScreen" class="overflow-y-auto" style="height:calc(var(--vh) * 85);top:calc(var(--vh) * 15)">
 
   <div class="my-2 w-full max-w-xl flex justify-center items-center font-bold">{{ __('New Food') }}</div>
-
-  <div class="my-2 w-full max-w-xl flex flex-row justify-center items-center">
-    <input class="text-left" type="text" id="EditScreenName" placeholder="Name...">
-  </div>
 
   <div class="my-2 w-full max-w-xl flex flex-row justify-center items-center">
     <input class="text-left" type="text" id="EditScreenVendor" placeholder="Vendor...">
@@ -27,6 +79,12 @@
 
   <div class="my-2 w-full max-w-xl flex flex-row justify-center items-center">
     <input class="text-left" type="text" id="EditScreenURL" placeholder="URL...">
+  </div>
+
+  <x-primary-button class="my-4 w-full max-w-xs flex justify-center items-center" id="Get">{{ __('Get') }}</x-primary-button>
+
+  <div class="my-2 w-full max-w-xl flex flex-row justify-center items-center">
+    <input class="text-left" type="text" id="EditScreenName" placeholder="Name...">
   </div>
 
   <div class="my-2 w-full max-w-xl flex flex-row justify-center items-center">
