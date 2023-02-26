@@ -36,7 +36,7 @@ class ModelUser extends Model
   {
     $id = Auth::user()->id;
     return $profiles = DB::table('nutrient_goals')
-    ->select('userID', 'carbohydrate', 'fat', 'saturated', 'protein', 'fibre', 'salt', 'alcohol')
+    ->select('userID', 'carbohydrate', 'sugar', 'fat', 'saturated', 'protein', 'fibre', 'salt', 'alcohol')
     ->where('userID', '=', $id)
     ->first();
   }
