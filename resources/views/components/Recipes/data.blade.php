@@ -28,16 +28,16 @@
       <div class="w-full mx-auto" id="{{$recipe->id}}displayStack" style="display:none;">
 
         <div class="flex flex-row w-full max-w-sm justify-evenly items-center mx-auto">
-          <x-secondary-button class="dataviewbutton m-2 p-2 flex justify-center items-center" data-i='{{$recipe->id}}' id="{{$recipe->id}}Options">
+          <x-secondary-button class="m-2 p-2 flex justify-center items-center" id="{{$recipe->id}}Options">
             <img class="w-3/4 h-3/4 flex justify-center items-center" src="{{ asset('storage/Assets/chartLight.svg') }}">
           </x-secondary-button>
-          <x-secondary-button class="dataviewbutton m-2 p-2 flex justify-center items-center" data-i='{{$recipe->id}}' id="{{$recipe->id}}Data">
+          <x-secondary-button class="m-2 p-2 flex justify-center items-center" data-i='{{$recipe->id}}' id="{{$recipe->id}}Data">
             <img class="w-3/4 h-3/4 flex justify-center items-center" src="{{ asset('storage/Assets/barChart.svg') }}">
           </x-secondary-button>
-          <x-secondary-button class="ingredientviewbutton m-2 p-2 flex justify-center items-center" id="{{$recipe->id}}Ingredients">
+          <x-secondary-button class="m-2 p-2 flex justify-center items-center" id="{{$recipe->id}}Ingredients">
             <img class="w-3/4 h-3/4 flex justify-center items-center" src="{{ asset('storage/Assets/bowl.svg') }}">
           </x-secondary-button>
-          <x-secondary-button class="instructionviewbutton m-2 p-2 flex justify-center items-center" id="{{$recipe->id}}Instructions">
+          <x-secondary-button class="m-2 p-2 flex justify-center items-center" id="{{$recipe->id}}Instructions">
             <img class="w-3/4 h-3/4 flex justify-center items-center" src="{{ asset('storage/Assets/listLight.svg') }}">
           </x-secondary-button>
         </div>
@@ -200,91 +200,98 @@
       
         <div class="w-full max-w-sm overflow-y-auto flex flex-col justify-start items-center border border-zinc-300 rounded-lg p-2 mx-auto" id="{{$recipe->id}}DataList" style="display:none;">
       
+          <label class="m-2 p-2 flex justify-center items-center">{{ __('Name:') }}</label>
           <input class="m-2 p-2 flex justify-center items-center border border-black" id="{{$recipe->id}}NewNameExists" value='{{$recipe->name}}'>
-          <input class="m-2 flex justify-center items-center" min="0" step="0.1" type="number" placeholder="Servings..." id="{{$recipe->id}}EntryServingsExists" value="{{$recipe->servings}}">
+          <label class="m-2 p-2 flex justify-center items-center">{{ __('Servings:') }}</label>
+          <input class="m-2 flex justify-center items-center" min="0" step="0.1" type="number" placeholder="" id="{{$recipe->id}}EntryServingsExists" value="{{$recipe->servings}}">
           <div class="w-full flex flex-row justify-center items-center p-2">
             <div class="flex justify-center items-center w-full">{{ __('Category') }}</div>
-            <div class="flex justify-center items-center w-full">{{ __('Total') }}</div>
+            <div class="flex justify-center items-center w-full">{{ __('Total (g)') }}</div>
             <div class="flex justify-center items-center w-full">{{ __('Serving') }}</div>
           </div>
           <div class="w-full flex flex-row justify-center items-center p-2">
             <div class="flex justify-center items-center w-full">{{ __('Price') }}</div>
-            <div id="{{$recipe->id}}RecipeTotalPrice" class="flex justify-center items-center w-full"></div>
-            <div id="{{$recipe->id}}RecipeServingPrice" class="flex justify-center items-center w-full"></div>
+            <div id="{{$recipe->id}}RecipeTotalPrice" class="flex justify-center items-center w-full">{{$recipe->info['price']}}</div>
+            <div id="{{$recipe->id}}RecipeServingPrice" class="flex justify-center items-center w-full"><?php if((int)$recipe->info['price'] !== 0 && (int)$recipe->servings !== 0) echo ($recipe->info['price'] / $recipe->servings); ?></div>
+          </div>
+          <div class="w-full flex flex-row justify-center items-center p-2">
+            <div class="flex justify-center items-center w-full">{{ __('Weight') }}</div>
+            <div id="{{$recipe->id}}RecipeTotalWeight" class="flex justify-center items-center w-full">{{$recipe->per}}</div>
+            <div id="{{$recipe->id}}RecipeServingWeight" class="flex justify-center items-center w-full"><?php if((int)$recipe->per !== 0 && (int)$recipe->servings !== 0) echo ($recipe->per / $recipe->servings); ?></div>
           </div>
           <div class="w-full flex flex-row justify-center items-center p-2">
             <div class="flex justify-center items-center w-full">{{ __('Calories') }}</div>
-            <div id="{{$recipe->id}}RecipeTotalCalories" class="flex justify-center items-center w-full"></div>
-            <div id="{{$recipe->id}}RecipeServingCalories" class="flex justify-center items-center w-full"></div>
+            <div id="{{$recipe->id}}RecipeTotalCalories" class="flex justify-center items-center w-full">{{$recipe->info['calories']}}</div>
+            <div id="{{$recipe->id}}RecipeServingCalories" class="flex justify-center items-center w-full"><?php if((int)$recipe->info['calories'] !== 0 && (int)$recipe->servings !== 0) echo ($recipe->info['calories'] / $recipe->servings); ?></div>
           </div>
           <div class="w-full flex flex-row justify-center items-center p-2">
             <div class="flex justify-center items-center w-full">{{ __('Carbohydrate') }}</div>
-            <div id="{{$recipe->id}}RecipeTotalCarbohydrate" class="flex justify-center items-center w-full"></div>
-            <div id="{{$recipe->id}}RecipeServingCarbohydrate" class="flex justify-center items-center w-full"></div>
+            <div id="{{$recipe->id}}RecipeTotalCarbohydrate" class="flex justify-center items-center w-full">{{$recipe->info['carbohydrate']}}</div>
+            <div id="{{$recipe->id}}RecipeServingCarbohydrate" class="flex justify-center items-center w-full"><?php if((int)$recipe->info['carbohydrate'] !== 0 && (int)$recipe->servings !== 0) echo ($recipe->info['carbohydrate'] / $recipe->servings); ?></div>
           </div>
           <div class="w-full flex flex-row justify-center items-center p-2">
             <div class="flex justify-center items-center w-full">{{ __('Sugar') }}</div>
-            <div id="{{$recipe->id}}RecipeTotalSugar" class="flex justify-center items-center w-full"></div>
-            <div id="{{$recipe->id}}RecipeServingSugar" class="flex justify-center items-center w-full"></div>
+            <div id="{{$recipe->id}}RecipeTotalSugar" class="flex justify-center items-center w-full">{{$recipe->info['sugar']}}</div>
+            <div id="{{$recipe->id}}RecipeServingSugar" class="flex justify-center items-center w-full"><?php if((int)$recipe->info['sugar'] !== 0 && (int)$recipe->servings !== 0) echo ($recipe->info['sugar'] / $recipe->servings); ?></div>
           </div>
           <div class="w-full flex flex-row justify-center items-center p-2">
             <div class="flex justify-center items-center w-full">{{ __('Fat') }}</div>
-            <div id="{{$recipe->id}}RecipeTotalFat" class="flex justify-center items-center w-full"></div>
-            <div id="{{$recipe->id}}RecipeServingFat" class="flex justify-center items-center w-full"></div>
+            <div id="{{$recipe->id}}RecipeTotalFat" class="flex justify-center items-center w-full">{{$recipe->info['fat']}}</div>
+            <div id="{{$recipe->id}}RecipeServingFat" class="flex justify-center items-center w-full"><?php if((int)$recipe->info['fat'] !== 0 && (int)$recipe->servings !== 0) echo ($recipe->info['fat'] / $recipe->servings); ?></div>
           </div>
           <div class="w-full flex flex-row justify-center items-center p-2">
             <div class="flex justify-center items-center w-full">{{ __('Saturated') }}</div>
-            <div id="{{$recipe->id}}RecipeTotalSaturated" class="flex justify-center items-center w-full"></div>
-            <div id="{{$recipe->id}}RecipeServingSaturated" class="flex justify-center items-center w-full"></div>
+            <div id="{{$recipe->id}}RecipeTotalSaturated" class="flex justify-center items-center w-full">{{$recipe->info['saturated']}}</div>
+            <div id="{{$recipe->id}}RecipeServingSaturated" class="flex justify-center items-center w-full"><?php if((int)$recipe->info['saturated'] !== 0 && (int)$recipe->servings !== 0) echo ($recipe->info['saturated'] / $recipe->servings); ?></div>
           </div>
           <div class="w-full flex flex-row justify-center items-center p-2">
             <div class="flex justify-center items-center w-full">{{ __('Protein') }}</div>
-            <div id="{{$recipe->id}}RecipeTotalProtein" class="flex justify-center items-center w-full"></div>
-            <div id="{{$recipe->id}}RecipeServingProtein" class="flex justify-center items-center w-full"></div>
+            <div id="{{$recipe->id}}RecipeTotalProtein" class="flex justify-center items-center w-full">{{$recipe->info['protein']}}</div>
+            <div id="{{$recipe->id}}RecipeServingProtein" class="flex justify-center items-center w-full"><?php if((int)$recipe->info['protein'] !== 0 && (int)$recipe->servings !== 0) echo ($recipe->info['protein'] / $recipe->servings); ?></div>
           </div>
           <div class="w-full flex flex-row justify-center items-center p-2">
             <div class="flex justify-center items-center w-full">{{ __('Fibre') }}</div>
-            <div id="{{$recipe->id}}RecipeTotalFibre" class="flex justify-center items-center w-full"></div>
-            <div id="{{$recipe->id}}RecipeServingFibre" class="flex justify-center items-center w-full"></div>
+            <div id="{{$recipe->id}}RecipeTotalFibre" class="flex justify-center items-center w-full">{{$recipe->info['fibre']}}</div>
+            <div id="{{$recipe->id}}RecipeServingFibre" class="flex justify-center items-center w-full"><?php if((int)$recipe->info['fibre'] !== 0 && (int)$recipe->servings !== 0) echo ($recipe->info['fibre'] / $recipe->servings); ?></div>
           </div>
           <div class="w-full flex flex-row justify-center items-center p-2">
             <div class="flex justify-center items-center w-full">{{ __('Salt') }}</div>
-            <div id="{{$recipe->id}}RecipeTotalSalt" class="flex justify-center items-center w-full"></div>
-            <div id="{{$recipe->id}}RecipeServingSalt" class="flex justify-center items-center w-full"></div>
+            <div id="{{$recipe->id}}RecipeTotalSalt" class="flex justify-center items-center w-full">{{$recipe->info['salt']}}</div>
+            <div id="{{$recipe->id}}RecipeServingSalt" class="flex justify-center items-center w-full"><?php if((int)$recipe->info['salt'] !== 0 && (int)$recipe->servings !== 0) echo ($recipe->info['salt'] / $recipe->servings); ?></div>
           </div>
           <div class="w-full flex flex-row justify-center items-center p-2">
             <div class="flex justify-center items-center w-full">{{ __('Alcohol') }}</div>
-            <div id="{{$recipe->id}}RecipeTotalAlcohol" class="flex justify-center items-center w-full"></div>
-            <div id="{{$recipe->id}}RecipeServingAlcohol" class="flex justify-center items-center w-full"></div>
+            <div id="{{$recipe->id}}RecipeTotalAlcohol" class="flex justify-center items-center w-full">{{$recipe->info['alcohol']}}</div>
+            <div id="{{$recipe->id}}RecipeServingAlcohol" class="flex justify-center items-center w-full"><?php if((int)$recipe->info['alcohol'] !== 0 && (int)$recipe->servings !== 0) echo ($recipe->info['alcohol'] / $recipe->servings); ?></div>
           </div>
         </div>
       
         <div class="w-full max-w-sm overflow-y-auto flex flex-col justify-start items-center border border-zinc-300 rounded-lg p-2 mx-auto" id="{{$recipe->id}}IngredientList" style="display:none;">
-            @foreach(json_decode($recipe->ingredients) as $ingredient)
-              @foreach($foods as $food)
-                @if((int)$food->id === (int)$ingredient->index && (string)$ingredient->type === "F")
-                  <div class="flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)">
-                    <div class="w-64 truncate p-2 mx-2 rounded-lg" data-index='{{$ingredient->index}}' data-type='{{$ingredient->type}}'>
-                      {{$food->name}}
-                    </div>
-                    <input type="number" min="0" step="0.1" class="{{$recipe->id}}inputamountExists w-24 h-10/12 p-2 mx-2 text-center" data-type="F" data-index='{{$ingredient->index}}' id="{{$ingredient->index}}foodAmount" value='{{$ingredient->amount}}'>
+          @foreach(json_decode($recipe->ingredients) as $ingredient)
+            @foreach($foods as $food)
+              @if((int)$food->id === (int)$ingredient->index && (string)$ingredient->type === "F")
+                <div class="flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)">
+                  <div class="w-64 truncate p-2 mx-2 rounded-lg" data-index='{{$ingredient->index}}' data-type='{{$ingredient->type}}'>
+                    {{$food->name}}
                   </div>
-                @endif
-              @endforeach
-              @foreach($recipes as $recipe)
-                @if((int)$recipe->id === (int)$ingredient->index && (string)$ingredient->type === "R")
-                  <div class="flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)">
-                    <div class="w-64 truncate p-2 mx-2 rounded-lg" data-index='{{$ingredient->index}}' data-type='{{$ingredient->type}}'>
-                      {{$recipe->name}}
-                    </div>
-                    <input type="number" min="0" step="0.1" class="{{$recipe->id}}inputamountExists w-24 h-10/12 p-2 mx-2 text-center" data-type="R" data-index='{{$ingredient->index}}' id="{{$ingredient->index}}recipeAmount" value='{{$ingredient->amount}}'>
-                  </div>
-                @endif
-              @endforeach
+                  <input type="number" min="0" step="0.1" class="{{$recipe->id}}inputamountExists w-24 h-10/12 p-2 mx-2 text-center" data-type="F" data-index='{{$ingredient->index}}' id="{{$ingredient->index}}foodAmount" value='{{$ingredient->amount}}'>
+                </div>
+              @endif
             @endforeach
+            @foreach($recipes as $recipe1)
+              @if((int)$recipe1->id === (int)$ingredient->index && (string)$ingredient->type === "R")
+                <div class="flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)">
+                  <div class="w-64 truncate p-2 mx-2 rounded-lg" data-index='{{$ingredient->index}}' data-type='{{$ingredient->type}}'>
+                    {{$recipe1->name}}
+                  </div>
+                  <input type="number" min="0" step="0.1" class="{{$recipe1->id}}inputamountExists w-24 h-10/12 p-2 mx-2 text-center" data-type="R" data-index='{{$ingredient->index}}' id="{{$ingredient->index}}recipeAmount" value='{{$ingredient->amount}}'>
+                </div>
+              @endif
+            @endforeach
+          @endforeach
         </div>
-      
-        <div class="w-full max-w-xl flex flex-col justify-start items-center border border-zinc-300 rounded-lg p-2 mx-auto" id="{{$recipe->id}}InstructionList" style="display:none;">
+
+        <div class="w-full max-w-sm overflow-y-auto flex flex-col justify-start items-center border border-zinc-300 rounded-lg p-2 mx-auto" id="{{$recipe->id}}InstructionList" style="display:none;">
           <div id="{{$recipe->id}}InstructionBox" class="w-full overflow-y-auto flex flex-col justify-start items-center border border-zinc-300 rounded-lg p-2">
             <div class="w-full flex flex-row justify-between items-center p-2">
               <div class="flex justify-center items-center">{{ __('Step') }}</div>

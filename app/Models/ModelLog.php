@@ -64,7 +64,7 @@ class ModelLog extends Model
     ->select(
     'logs.id', 'logs.userID', 'logs.itemType', 'logs.itemID',
     'logs.logTime', 'logs.amount',
-    'recipes.name', 'recipes.servings', 'recipes.ingredients', 'recipes.instructions',
+    'recipes.name', 'recipes.servings', 'recipes.ingredients', 'recipes.instructions', 'recipes.per', 'recipes.expiry'
     )
     ->where('logs.userID', '=', $id)
     ->where('logs.itemType', '=', 1)
@@ -115,92 +115,14 @@ class ModelLog extends Model
     }
 
     if(count($recipeLogs) > 0)
-    {
-      $foods = DB::table('foods')
-      ->where('userID', '=', $id)
-      ->where('hiddenRow', '=', 0)
-      ->orderBy('name', 'asc')
-      ->get();
-  
-      $recipes = DB::table('recipes')
-      ->where('userID', '=', $id)
-      ->where('hiddenRow', '=', 0)
-      ->orderBy('name', 'asc')
-      ->get();
-  
+    { 
       foreach($recipeLogs as $log)
       {
+        $recipe = $this->GetRecipe($log->itemID);
+
+        $weight = $recipe->per;
         $amount = $log->amount;
-        $ingredients = json_decode($log->ingredients);
-
-        $weight = 0;
-
-        $price = 0;
-        $calories = 0;
-        $carbohydrate = 0;
-
-        $sugar = 0;
-        $fat = 0;
-        $saturated = 0;
-
-        $protein = 0;
-        $fibre = 0;
-        $salt = 0;
-
-        $alcohol = 0;
-
-        $expiry = 0;
-        $per = 0;
-        $servings = 0;
-
-        foreach($recipes as $recipe)
-        {
-          if((int)$recipe->id === (int)$log->itemID)
-          {
-            $expiry = $recipe->expiry;
-            $per = $recipe->per;
-            $servings = $recipe->servings;
-            break;
-          }
-        }
-  
-        foreach($ingredients as $ingredient)
-        {
-          $ingredient = json_decode(json_encode($ingredient), true);
-          $weight += $ingredient['amount'];
-  
-          if((string)$ingredient['type'] === "F")
-          {
-            foreach($foods as $food)
-            {
-              if((int)$food->id === (int)$ingredient['index'])
-              {
-                if((int)$food->weight === 0) $food->weight = 1;
-                if((int)$food->per === 0) $food->per = 1;
-                if((int)$ingredient['amount'] === 0) $ingredient['amount'] = 1;
-                $price += ( $food->price / $food->weight ) * (float)$ingredient['amount'];
-                $calories += ( $food->calories / $food->per ) * (float)$ingredient['amount'];
-                $carbohydrate += ( $food->carbohydrate / $food->per ) * (float)$ingredient['amount'];
-  
-                $sugar += ( $food->sugar / $food->per ) * (float)$ingredient['amount'];
-                $fat += ( $food->fat / $food->per ) * (float)$ingredient['amount'];
-                $saturated += ( $food->saturated / $food->per ) * (float)$ingredient['amount'];
-  
-                $protein += ( $food->protein / $food->per ) * (float)$ingredient['amount'];
-                $fibre += ( $food->fibre / $food->per ) * (float)$ingredient['amount'];
-                $salt += ( $food->salt / $food->per ) * (float)$ingredient['amount'];
-  
-                $alcohol += ( $food->alcohol / $food->per ) * (float)$ingredient['amount'];
-                break;
-              }
-            }
-          }
-          else if($ingredient['type'] === "R")
-          {
-            // TO BE IMPLEMENTED
-          }
-        }
-
+        
         $newLog = new \stdClass;
         $newLog->id = (int)$log->id;
         $newLog->userID = (int)$log->userID;
@@ -210,21 +132,22 @@ class ModelLog extends Model
         $newLog->amount = (float)number_format($log->amount, 2);
         $newLog->name = (string)$log->name;
 
-        $newLog->price = (float)number_format( ($price / $per ) * $amount, 2);
-        $newLog->weight = (float)number_format( ($weight / $per ) * $amount, 2);
-        $newLog->servings = (float)number_format($servings, 2);
-        $newLog->expiry = (int)$expiry;
-        $newLog->per = (float)number_format($per, 2);
-        $newLog->calories = (float)number_format( ($calories / $per ) * $amount, 2);
-        $newLog->carbohydrate = (float)number_format( ($carbohydrate / $per ) * $amount, 2);
-        $newLog->sugar = (float)number_format( ($sugar / $per ) * $amount, 2);
-        $newLog->fat = (float)number_format( ($fat / $per ) * $amount, 2);
-        $newLog->saturated = (float)number_format( ($saturated / $per ) * $amount, 2);
-        $newLog->protein = (float)number_format( ($protein / $per ) * $amount, 2);
-        $newLog->fibre = (float)number_format( ($fibre / $per ) * $amount, 2);
-        $newLog->salt = (float)number_format( ($salt / $per ) * $amount, 2);
-        $newLog->alcohol = (float)number_format( ($alcohol / $per ) * $amount, 2);
-        $newLog->fibre = (float)number_format( ($fibre / $per ) * $amount, 2);
+        $newLog->weight = (float)number_format( (float)$log->per, 2);
+        $newLog->servings = (float)number_format((float)$log->servings, 2);
+        $newLog->expiry = (int)$log->expiry;
+        $newLog->per = (float)number_format((float)$log->per, 2);
+
+        $newLog->price = (float)number_format( (( (float)$recipe->info['price'] / $weight ) * $amount), 2);
+        $newLog->calories = (float)number_format( (( (float)$recipe->info['calories'] / $weight ) * $amount), 2);
+        $newLog->carbohydrate = (float)number_format( (( (float)$recipe->info['carbohydrate'] / $weight ) * $amount), 2);
+        $newLog->sugar = (float)number_format( (( (float)$recipe->info['sugar'] / $weight ) * $amount), 2);
+        $newLog->fat = (float)number_format( (( (float)$recipe->info['fat'] / $weight ) * $amount), 2);
+        $newLog->saturated = (float)number_format( (( (float)$recipe->info['saturated'] / $weight ) * $amount), 2);
+        $newLog->protein = (float)number_format( (( (float)$recipe->info['protein'] / $weight ) * $amount), 2);
+        $newLog->fibre = (float)number_format( (( (float)$recipe->info['fibre'] / $weight ) * $amount), 2);
+        $newLog->salt = (float)number_format( (( (float)$recipe->info['salt'] / $weight ) * $amount), 2);
+        $newLog->alcohol = (float)number_format( (( (float)$recipe->info['alcohol'] / $weight ) * $amount), 2);
+        $newLog->fibre = (float)number_format( (( (float)$recipe->info['fibre'] / $weight ) * $amount), 2);
 
         $newLog->fruit = null;
         $newLog->vegetable = null;
@@ -241,6 +164,21 @@ class ModelLog extends Model
     });
 
     return $newLogs;
+  }
+
+  public function GetRecipe($index)
+  {
+    $id = Auth::user()->id;
+    $recipe = DB::table('recipes')
+    ->where('userID', '=', $id)
+    ->where('id', '=', $index)
+    ->first();
+
+    $stdClass = json_decode($recipe->ingredients);
+    $array = json_decode(json_encode($stdClass));
+    $recipe->info = $this->GetRecipeInfoTotals($array);
+
+    return $recipe;
   }
 
   public function Totals($logs)
@@ -412,5 +350,109 @@ class ModelLog extends Model
       'salt' => (float)$salt,
       'alcohol' => (float)$alcohol,
     ];
+  }
+
+  public function GetRecipeInfoTotals($ingredients)
+  {
+    $userID = Auth::id();
+    $len = count($ingredients);
+
+    $output = [];
+
+    for($i = 0; $i < $len; $i++)
+    {
+      $array = json_decode(json_encode($ingredients[$i]), true);
+      if($array['type'] === 'F')
+      {
+
+        $food = DB::table('foods')
+        ->where('userID', '=', $userID)
+        ->where('id', '=', $array['index'])
+        ->where('hiddenRow', '=', 0)
+        ->first();
+
+        $log = [
+
+          'type' => 'food',
+
+          'weight' => $array['amount'],
+
+          'price' => ( ( $food->price / $food->weight ) * $array['amount'] ),
+
+          'calories' => ( ( $food->calories / $food->per ) * $array['amount'] ),
+          'carbohydrate' => ( ( $food->carbohydrate / $food->per ) * $array['amount'] ),
+          'sugar' => ( ( $food->sugar / $food->per ) * $array['amount'] ),
+
+          'fat' => ( ( $food->fat / $food->per ) * $array['amount'] ),
+          'saturated' => ( ( $food->saturated / $food->per ) * $array['amount'] ),
+          'protein' => ( ( $food->protein / $food->per ) * $array['amount'] ),
+
+          'fibre' => ( ( $food->fibre / $food->per ) * $array['amount'] ),
+          'salt' => ( ( $food->salt / $food->per ) * $array['amount'] ),
+          'alcohol' => ( ( $food->alcohol / $food->per ) * $array['amount'] ),
+
+        ];
+
+        array_push($output, $log);
+
+      }
+
+    }
+
+    $oLen = count($output);
+
+    $totalWeight = 0;
+    $totalPrice = 0;
+
+    $totalCalories = 0;
+    $totalCarbohydrates = 0;
+    $totalSugars = 0;
+
+    $totalFats = 0;
+    $totalSaturates = 0;
+    $totalProteins = 0;
+
+    $totalFibres = 0;
+    $totalSalts = 0;
+    $totalAlcohols = 0;
+
+    for($i = 0; $i < $oLen; $i++)
+    {
+      $totalWeight += $output[$i]['weight'];
+      $totalPrice += $output[$i]['price'];
+
+      $totalCalories += $output[$i]['calories'];
+      $totalCarbohydrates += $output[$i]['carbohydrate'];
+      $totalSugars += $output[$i]['sugar'];
+
+      $totalFats += $output[$i]['fat'];
+      $totalSaturates += $output[$i]['saturated'];
+      $totalProteins += $output[$i]['protein'];
+
+      $totalFibres += $output[$i]['fibre'];
+      $totalSalts += $output[$i]['salt'];
+      $totalAlcohols += $output[$i]['alcohol'];
+    }
+
+    $log = [
+
+      'weight' => $totalWeight,
+      'price' => $totalPrice,
+
+      'calories' => $totalCalories,
+      'carbohydrate' => $totalCarbohydrates,
+      'sugar' => $totalSugars,
+
+      'fat' => $totalFats,
+      'saturated' => $totalSaturates,
+      'protein' => $totalProteins,
+
+      'fibre' => $totalFibres,
+      'salt' => $totalSalts,
+      'alcohol' => $totalAlcohols,
+
+    ];
+
+    return $log;
   }
 }

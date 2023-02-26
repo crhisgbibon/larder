@@ -83,4 +83,9 @@
 
   <div id="messageBoxHolder"><div id="messageBox" style='display:none;'></div></div>
 
+  <script>
+    const profile = {!! json_encode($profile) !!};
+    const targets = {!! json_encode($targets) !!};
+  </script>
+
 </x-app-layout>

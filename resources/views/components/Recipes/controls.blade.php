@@ -102,6 +102,9 @@
 
     <div class="w-full max-w-sm overflow-y-auto flex flex-col justify-start items-center border border-zinc-300 rounded-lg p-2" id="FoodList" style="max-height:calc(var(--vh) * 75)">
       <div class="flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)">
+        <input class="w-full truncate p-2 mx-2 rounded-lg border border-zinc-300" style='max-width: 95%' id='FilterFood'>
+      </div>
+      <div class="flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)">
         <div class="w-64 truncate p-2 mx-2 rounded-lg">
           {{ __('Name') }}
         </div>
@@ -110,7 +113,7 @@
         </div>
       </div>
       @foreach($foods as $food)
-        <div class="flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)">
+        <div class="toggleFoodDiv flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)" data-search='{{$food->name}}'>
           <div class="toggleFood w-64 truncate p-2 mx-2 rounded-lg" 
           data-index={{$food->id}}
           >
@@ -123,6 +126,9 @@
 
     <div class="w-full max-w-sm overflow-y-auto flex flex-col justify-start items-center border border-zinc-300 rounded-lg p-2" id="RecipeList" style="max-height:calc(var(--vh) * 75)">
       <div class="flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)">
+        <input class="w-full truncate p-2 mx-2 rounded-lg border border-zinc-300" style='max-width: 95%' id='FilterRecipe'>
+      </div>
+      <div class="flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)">
         <div class="w-64 truncate p-2 mx-2 rounded-lg">
           {{ __('Name') }}
         </div>
@@ -131,7 +137,7 @@
         </div>
       </div>
       @foreach($recipes as $recipe)
-        <div class="flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)">
+        <div class="toggleRecipeDiv flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)" data-search='{{$recipe->name}}'>
           <div class="toggleRecipe w-64 truncate p-2 mx-2 rounded-lg" data-index={{$recipe->id}}>
             {{$recipe->name}}
           </div>

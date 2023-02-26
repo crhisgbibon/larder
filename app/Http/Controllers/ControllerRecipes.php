@@ -22,10 +22,15 @@ class ControllerRecipes extends Controller
   {
     $model = new ModelRecipes();
     $recipes = $model->GetRecipes();
+    // return $recipes;
     $foods = $model->GetFoods();
+    $targets = $model->GetNutrientTargets();
+    $profile = $model->GetProfile();
     return view('recipes', [
       'recipes' => $recipes,
       'foods' => $foods,
+      'targets' => $targets,
+      'profile' => $profile,
     ]);
   }
 
@@ -33,8 +38,10 @@ class ControllerRecipes extends Controller
   {
     $model = new ModelRecipes();
     $recipes = $model->GetRecipes();
+    $foods = $model->GetFoods();
     return view('components.Recipes.data', [
       'recipes' => $recipes,
+      'foods' => $foods,
     ]);
   }
 
@@ -106,5 +113,13 @@ class ControllerRecipes extends Controller
 
     $debug = $model->AddLog($data);
     return $debug;
+  }
+
+  function UpdateNewRecipeStats(Request $request)
+  {
+    $ingredients = $request->data;
+    $model = new ModelRecipes();
+    $nutrients = $model->GetRecipeInfo($ingredients);
+    return $nutrients;
   }
 }

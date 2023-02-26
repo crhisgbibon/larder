@@ -49,6 +49,7 @@ Route::controller(ControllerRecipes::class)->group(function () {
   Route::post('/recipes/UpdateRecipeName', 'UpdateName')->middleware(['auth', 'verified'])->name('UpdateName');
   Route::post('/recipes/EditExisting', 'EditExisting')->middleware(['auth', 'verified'])->name('EditExisting');
   Route::post('/recipes/AddLog', 'AddLog')->middleware(['auth', 'verified'])->name('AddLog');
+  Route::post('/recipes/UpdateNewRecipeStats', 'UpdateNewRecipeStats')->middleware(['auth', 'verified'])->name('UpdateNewRecipeStats');
 });
 
 Route::controller(ControllerUser::class)->group(function () {

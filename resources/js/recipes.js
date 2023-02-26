@@ -36,6 +36,13 @@ const FoodList = document.getElementById("FoodList");
 const RecipeList = document.getElementById("RecipeList");
 const IngredientViews = [FoodList, RecipeList];
 
+const FilterFood = document.getElementById('FilterFood');
+FilterFood.onkeyup = function(){ Filter("toggleFoodDiv", FilterFood.value); };
+const FilterRecipe = document.getElementById('FilterRecipe');
+FilterRecipe.onkeyup = function(){ Filter("toggleRecipeDiv", FilterRecipe.value); };
+
+NewEntryServings.onkeyup = function(){ UpdateServings(); };
+
 // Assignments
 // Message Box
 messageBox.onclick = function(){ TogglePanel(messageBox); };
@@ -54,6 +61,42 @@ AddInstructionButton.onclick = function(){ AddInstruction(); };
 RemoveInstructionButton.onclick = function(){ RemoveInstruction(); };
 ToggleFoods.onclick = function(){ SwitchView(IngredientViews, 0); };
 ToggleRecipes.onclick = function(){ SwitchView(IngredientViews, 1); };
+
+// target amounts
+let tCalories, tCarbohydrate, tSugar, tFat, tSaturated, tProtein, tFibre, tSalt, tAlcohol;
+if(profile !== null && profile !== undefined)
+{
+  tCalories = profile['caloryGoal'];
+  tCarbohydrate = targets['carbohydrate'];
+  tSugar = targets['sugar'];
+  tFat = targets['fat'];
+  tSaturated = targets['saturated'];
+  tProtein = targets['protein'];
+  tFibre = targets['fibre'];
+  tSalt = targets['salt'];
+  tAlcohol = targets['alcohol'];
+}
+else
+{
+  tCalories = 2000;
+  tCarbohydrate = 267;
+  tSugar = 27;
+  tFat = 78;
+  tSaturated = 24;
+  tProtein = 45;
+  tFibre = 30;
+  tSalt = 6;
+  tAlcohol = 16;
+}
+// high / low figures per 100g
+let hSugar = 22.5;
+let lSugar = 5;
+let hFat = 17.5;
+let lFat = 3;
+let hSaturated = 5;
+let lSaturated = 1.5;
+let hSalt = 1.5;
+let lSalt = 0.3;
 
 // Startup
 SwitchView(NewViews, 0);
@@ -308,8 +351,6 @@ function AddNewItem()
     instructions,
   ];
 
-  console.log(data);
-
   $.ajax(
   {
     method: "POST",
@@ -324,14 +365,13 @@ function AddNewItem()
     },
     success:function(result)
     {
-      console.log(result);
       Display.innerHTML = result;
       TogglePanel(NewEntry);
       ReAssign();
     },
-    error:function(result)
+    error:function()
     {
-      console.log(result);
+
     }
   });
 }
@@ -474,20 +514,28 @@ function ReAssign()
     deletestack[i].onclick = function() { Delete(id) };
   }
 
-  let dataviewbutton = document.getElementsByClassName("dataviewbutton");
-  for(let i = 0; i < dataviewbutton.length; i++)
+  let updatestat = document.getElementsByClassName("updatestat");
+  for(let i = 0; i < updatestat.length; i++)
   {
-    let id = dataviewbutton[i].dataset.i;
+    let id = updatestat[i].dataset.i;
+    updatestat[i].onkeyup = function() { UpdateStat(id) };
+  }
+
+  let recipeType = document.getElementsByClassName("recipeType");
+  for(let i = 0; i < recipeType.length; i++)
+  {
+    let id = recipeType[i].dataset.id;
     let oList = document.getElementById(id + "OptionsList");
     let dList = document.getElementById(id + "DataList");
     let iList = document.getElementById(id + "IngredientList");
     let i2List = document.getElementById(id + "InstructionList");
     let a = [oList, dList, iList, i2List];
     let optionsButton = document.getElementById(id + "Options");
+    let dataButton = document.getElementById(id + "Data");
     let ingredientsButton = document.getElementById(id + "Ingredients");
     let instructionsButton = document.getElementById(id + "Instructions");
     optionsButton.onclick = function() { SwitchView(a, 0) };
-    dataviewbutton[i].onclick = function() { SwitchView(a, 1) };
+    dataButton.onclick = function() { SwitchView(a, 1) };
     ingredientsButton.onclick = function() { SwitchView(a, 2) };
     instructionsButton.onclick = function() { SwitchView(a, 3) };
     let save = document.getElementById(id + "SaveRecipe");
@@ -509,6 +557,127 @@ function ReAssign()
     let id = logrecipe[i].dataset.i;
     logrecipe[i].onclick = function() { AnimatePop(logrecipe[i]); LogRecipe(id) };
   }
+
+  let inputamount = document.getElementsByClassName("inputamount");
+  for(let i = 0; i < inputamount.length; i++)
+  {
+    inputamount[i].onchange = function() { UpdateNewRecipeStats(); };
+  }
+}
+
+function UpdateNewRecipeStats(id)
+{
+  let data = [];
+
+  let inputamount = document.getElementsByClassName("inputamount");
+  for(let i = 0; i < inputamount.length; i++)
+  {
+    if(inputamount[i].disabled !== true)
+    {
+      data.push({
+        'type':inputamount[i].dataset.type,
+        'index':inputamount[i].dataset.index,
+        'amount':inputamount[i].value,
+      });
+    }
+  }
+
+  $.ajax(
+  {
+    method: "POST",
+    url: '/recipes/UpdateNewRecipeStats',
+    headers:
+    {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    data:
+    {
+      data:data
+    },
+    success:function(result)
+    {
+
+      let total = undefined;
+
+      for(let i = 0; i < result.length; i++)
+      {
+        if(result[i].type === 'total') total = result[i];
+      }
+
+      let servings = document.getElementById('NewEntryServings').value;
+
+      document.getElementById('NewRecipeTotalPrice').innerHTML = '£' + total['price'];
+
+      document.getElementById('NewRecipeTotalCalories').innerHTML = total['calories'] + 'c';
+
+      document.getElementById('NewRecipeTotalCarbohydrate').innerHTML = total['carbohydrate'] + 'g';
+      document.getElementById('NewRecipeTotalSugar').innerHTML = total['sugar'] + 'g';
+      document.getElementById('NewRecipeTotalFat').innerHTML = total['fat'] + 'g';
+
+      document.getElementById('NewRecipeTotalSaturated').innerHTML = total['saturated'] + 'g';
+      document.getElementById('NewRecipeTotalProtein').innerHTML = total['protein'] + 'g';
+      document.getElementById('NewRecipeTotalFibre').innerHTML = total['fibre'] + 'g';
+
+      document.getElementById('NewRecipeTotalSalt').innerHTML = total['salt'] + 'g';
+      document.getElementById('NewRecipeTotalAlcohol').innerHTML = total['alcohol'] + 'g';
+
+
+
+      document.getElementById('NewRecipeServingPrice').innerHTML = '£' + ( total['price'] / servings) ;
+
+      document.getElementById('NewRecipeServingCalories').innerHTML = ( total['calories'] / servings) + 'c';
+
+      document.getElementById('NewRecipeServingCarbohydrate').innerHTML = ( total['carbohydrate'] / servings) + 'g';
+      document.getElementById('NewRecipeServingSugar').innerHTML = ( total['sugar'] / servings) + 'g';
+      document.getElementById('NewRecipeServingFat').innerHTML = ( total['fat'] / servings) + 'g';
+
+      document.getElementById('NewRecipeServingSaturated').innerHTML = ( total['saturated'] / servings) + 'g';
+      document.getElementById('NewRecipeServingProtein').innerHTML = ( total['protein'] / servings) + 'g';
+      document.getElementById('NewRecipeServingFibre').innerHTML = ( total['fibre'] / servings) + 'g';
+
+      document.getElementById('NewRecipeServingSalt').innerHTML = ( total['salt'] / servings) + 'g';
+      document.getElementById('NewRecipeServingAlcohol').innerHTML = ( total['alcohol'] / servings) + 'g';
+    },
+    error:function()
+    {
+
+    }
+  });
+}
+
+function UpdateServings()
+{
+  let servings = parseFloat(document.getElementById('NewEntryServings').value);
+
+  let price = parseFloat(document.getElementById('NewRecipeTotalPrice').innerHTML.replace('£', ''));
+
+  let calories = parseFloat(document.getElementById('NewRecipeTotalCalories').innerHTML);
+
+  let carbohydrate = parseFloat(document.getElementById('NewRecipeTotalCarbohydrate').innerHTML);
+  let sugar = parseFloat(document.getElementById('NewRecipeTotalSugar').innerHTML);
+  let fat = parseFloat(document.getElementById('NewRecipeTotalFat').innerHTML);
+
+  let saturated = parseFloat(document.getElementById('NewRecipeTotalSaturated').innerHTML);
+  let protein = parseFloat(document.getElementById('NewRecipeTotalProtein').innerHTML);
+  let fibre = parseFloat(document.getElementById('NewRecipeTotalFibre').innerHTML);
+
+  let salt = parseFloat(document.getElementById('NewRecipeTotalSalt').innerHTML);
+  let alcohol = parseFloat(document.getElementById('NewRecipeTotalAlcohol').innerHTML);
+
+  if(!isNaN(price)) document.getElementById('NewRecipeServingPrice').innerHTML = '£' + ( price / servings ).toFixed(2) ;
+
+  if(!isNaN(calories)) document.getElementById('NewRecipeServingCalories').innerHTML = ( calories / servings ).toFixed(2) + 'c';
+
+  if(!isNaN(carbohydrate)) document.getElementById('NewRecipeServingCarbohydrate').innerHTML = ( carbohydrate / servings ).toFixed(2) + 'g';
+  if(!isNaN(sugar)) document.getElementById('NewRecipeServingSugar').innerHTML = ( sugar / servings ).toFixed(2) + 'g';
+  if(!isNaN(fat)) document.getElementById('NewRecipeServingFat').innerHTML = ( fat / servings ).toFixed(2) + 'g';
+
+  if(!isNaN(saturated)) document.getElementById('NewRecipeServingSaturated').innerHTML = ( saturated / servings ).toFixed(2) + 'g';
+  if(!isNaN(protein)) document.getElementById('NewRecipeServingProtein').innerHTML = ( protein / servings ).toFixed(2) + 'g';
+  if(!isNaN(fibre)) document.getElementById('NewRecipeServingFibre').innerHTML = ( fibre / servings ).toFixed(2) + 'g';
+
+  if(!isNaN(salt)) document.getElementById('NewRecipeServingSalt').innerHTML = ( salt / servings ).toFixed(2) + 'g';
+  if(!isNaN(alcohol)) document.getElementById('NewRecipeServingAlcohol').innerHTML = ( alcohol / servings ).toFixed(2) + 'g';
 }
 
 function Switch(index)
@@ -603,6 +772,188 @@ function LogRecipe(id)
       MessageBox("Error.");
     }
   });
+}
+
+function UpdateStat(index)
+{
+  // the amount input and whether quantity or serving based calculation
+  let amount = document.getElementById(index + "Amount");
+  let mode = amount.dataset.mode;
+  let value = amount.value;
+
+  // the count displays
+  let cCalories = document.getElementById(index + "CountCalories");
+  let cPrice = document.getElementById(index + "CountPrice");
+  let cCarbohydrate = document.getElementById(index + "CountCarbohydrate");
+  let cSugar = document.getElementById(index + "CountSugar");
+  let cFat = document.getElementById(index + "CountFat");
+  let cSaturated = document.getElementById(index + "CountSaturated");
+  let cProtein = document.getElementById(index + "CountProtein");
+  let cFibre = document.getElementById(index + "CountFibre");
+  let cSalt = document.getElementById(index + "CountSalt");
+  let cAlcohol = document.getElementById(index + "CountAlcohol");
+
+  // the percent displays
+  let pCalories = document.getElementById(index + "PercentCalories");
+  let pPrice = document.getElementById(index + "PercentPrice");
+  let pCarbohydrate = document.getElementById(index + "PercentCarbohydrate");
+  let pSugar = document.getElementById(index + "PercentSugar");
+  let pFat = document.getElementById(index + "PercentFat");
+  let pSaturated = document.getElementById(index + "PercentSaturated");
+  let pProtein = document.getElementById(index + "PercentProtein");
+  let pFibre = document.getElementById(index + "PercentFibre");
+  let pSalt = document.getElementById(index + "PercentSalt");
+  let pAlcohol = document.getElementById(index + "PercentAlcohol");
+
+    // the amounts in the product
+  let Weight = document.getElementById(index + "RecipeTotalWeight").innerHTML;
+  let Servings = document.getElementById(index + "EntryServingsExists").value;
+
+  let Calories = document.getElementById(index + "RecipeTotalCalories").innerHTML;
+  let Price = document.getElementById(index + "RecipeTotalPrice").innerHTML;
+
+  let Carbohydrate = document.getElementById(index + "RecipeTotalCarbohydrate").innerHTML;
+  let Sugar = document.getElementById(index + "RecipeTotalSugar").innerHTML;
+  let Fat = document.getElementById(index + "RecipeTotalFat").innerHTML;
+  let Saturated = document.getElementById(index + "RecipeTotalSaturated").innerHTML;
+  let Protein = document.getElementById(index + "RecipeTotalProtein").innerHTML;
+  let Fibre = document.getElementById(index + "RecipeTotalFibre").innerHTML;
+  let Salt = document.getElementById(index + "RecipeTotalSalt").innerHTML;
+  let Alcohol = document.getElementById(index + "RecipeTotalAlcohol").innerHTML;
+
+  // per 100g - need to check that per is 100 else recalc the main values
+  let Per = Weight;
+
+  let sugarColour, fatColour, satColour, saltColour;
+
+  // adjust if using servings to calculate weight
+  if(mode === "S")
+  {
+    let servingSize = Weight / Servings;
+    value = value * servingSize;
+  }
+
+  // calculate totals and then percentages based on reference amounts
+  // also get color based on high/low figures
+  let amountCalories = ( Calories / Per ) * value;
+  let percentCalories = ( 100 / tCalories ) * amountCalories;
+
+  let amountPrice = ( Price / Weight ) * value;
+  let percentPrice = "n/a";
+
+  let amountCarbohydrate = ( Carbohydrate / Per ) * value;
+  let percentCarbohydrate = ( 100 / tCarbohydrate ) * amountCarbohydrate;
+
+  let amountSugar = ( Sugar / Per ) * value;
+  let percentSugar = ( 100 / tSugar ) * amountSugar;
+  if(parseInt(Per) === 100)
+  {
+    if(Sugar <= lSugar) sugarColour = "var(--green)";
+    if(Sugar > lSugar && Sugar <= hSugar) sugarColour = "var(--orange)";
+    if(Sugar > hSugar) sugarColour = "var(--red)";
+  }
+  else
+  {
+    let newSugar = Sugar / Per * 100;
+    if(newSugar <= lSugar) sugarColour = "var(--green)";
+    if(newSugar > lSugar && newSugar <= hSugar) sugarColour = "var(--orange)";
+    if(newSugar > hSugar) sugarColour = "var(--red)";
+  }
+
+  let amountFat = ( Fat / Per ) * value;
+  let percentFat = ( 100 / tFat ) * amountFat;
+  if(parseInt(Per) === 100)
+  {
+    if(Fat <= lFat) fatColour = "var(--green)";
+    if(Fat > lFat && Sugar <= hFat) fatColour = "var(--orange)";
+    if(Fat > hFat) fatColour = "var(--red)";
+  }
+  else
+  {
+    let newFat = Fat / Per * 100;
+    if(newFat <= lFat) fatColour = "var(--green)";
+    if(newFat > lFat && Sugar <= hFat) fatColour = "var(--orange)";
+    if(newFat > hFat) fatColour = "var(--red)";
+  }
+
+  let amountSaturated = ( Saturated / Per ) * value;
+  let percentSaturated = ( 100 / tSaturated ) * amountSaturated;
+  if(parseInt(Per) === 100)
+  {
+    if(Fat <= lSaturated) satColour = "var(--green)";
+    if(Fat > lSaturated && Sugar <= hSaturated) satColour = "var(--orange)";
+    if(Fat > hSaturated) satColour = "var(--red)";
+  }
+  else
+  {
+    let newSaturated = Fat / Per * 100;
+    if(newSaturated <= lSaturated) satColour = "var(--green)";
+    if(newSaturated > lSaturated && Sugar <= hSaturated) satColour = "var(--orange)";
+    if(newSaturated > hSaturated) satColour = "var(--red)";
+  }
+
+  let amountProtein = ( Protein / Per ) * value;
+  let percentProtein = ( 100 / tProtein ) * amountProtein;
+
+  let amountFibre = ( Fibre / Per ) * value;
+  let percentFibre = ( 100 / tFibre ) * amountFibre;
+
+  let amountSalt = ( Salt / Per ) * value;
+  let percentSalt = ( 100 / tSalt ) * amountSalt;
+  if(parseInt(Per) === 100)
+  {
+    if(Salt <= lSalt) saltColour = "var(--green)";
+    if(Salt > lSalt && Salt <= hSalt) saltColour = "var(--orange)";
+    if(Salt > hSalt) saltColour = "var(--red)";
+  }
+  else
+  {
+    let newSalt = Salt / Per * 100;
+    if(newSalt <= lSalt) saltColour = "var(--green)";
+    if(newSalt > lSalt && Salt <= hSalt) saltColour = "var(--orange)";
+    if(newSalt > hSalt) saltColour = "var(--red)";
+  }
+
+  let amountAlcohol = ( Alcohol / Per ) * value;
+  let percentAlcohol = ( 100 / tAlcohol ) * amountAlcohol;
+
+  cCalories.innerHTML = amountCalories.toFixed(2) + "c";
+  pCalories.innerHTML = percentCalories.toFixed(2);
+
+  cPrice.innerHTML = "£" + amountPrice.toFixed(2);
+  pPrice.innerHTML = percentPrice;
+
+  cCarbohydrate.innerHTML = amountCarbohydrate.toFixed(2) + "g";
+  pCarbohydrate.innerHTML = percentCarbohydrate.toFixed(2);
+
+  cSugar.innerHTML = amountSugar.toFixed(2) + "g";
+  pSugar.innerHTML = percentSugar.toFixed(2);
+  cSugar.style.backgroundColor = sugarColour;
+  pSugar.style.backgroundColor = sugarColour;
+
+  cFat.innerHTML = amountFat.toFixed(2) + "g";
+  pFat.innerHTML = percentFat.toFixed(2);
+  cFat.style.backgroundColor = fatColour;
+  pFat.style.backgroundColor = fatColour;
+
+  cSaturated.innerHTML = amountSaturated.toFixed(2) + "g";
+  pSaturated.innerHTML = percentSaturated.toFixed(2);
+  cSaturated.style.backgroundColor = satColour;
+  pSaturated.style.backgroundColor = satColour;
+
+  cProtein.innerHTML = amountProtein.toFixed(2) + "g";
+  pProtein.innerHTML = percentProtein.toFixed(2);
+
+  cFibre.innerHTML = amountFibre.toFixed(2) + "g";
+  pFibre.innerHTML = percentFibre.toFixed(2);
+
+  cSalt.innerHTML = amountSalt.toFixed(2) + "g";
+  pSalt.innerHTML = percentSalt.toFixed(2);
+  cSalt.style.backgroundColor = saltColour;
+  pSalt.style.backgroundColor = saltColour;
+
+  cAlcohol.innerHTML = amountAlcohol.toFixed(2) + "g";
+  pAlcohol.innerHTML = percentAlcohol.toFixed(2);
 }
 
 document.addEventListener("DOMContentLoaded", ReAssign);
