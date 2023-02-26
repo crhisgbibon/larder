@@ -304,6 +304,9 @@ function ChangeTime(id)
     time.value,
   ];
 
+  let logItem = document.getElementById(id);
+  logItem.dataset.time = time.value;
+
   $.ajax(
   {
     method: "POST",
@@ -319,12 +322,32 @@ function ChangeTime(id)
     success:function()
     {
       MessageBox("Time Changed.");
+      let collect = document.getElementsByClassName('logitem');
+      let ar = [];
+      for(let i = 0; i < collect.length; i++)
+      {
+        ar.push(collect[i]);
+      }
+      ar.sort(function(a,b){
+        return a.dataset.time.localeCompare(b.dataset.time);
+      });
+      Display.innerHTML = '';
+      let len = ar.length;
+      for(let i = 0; i < len; i++)
+      {
+        Display.appendChild(ar[i]);
+      }
     },
     error:function()
     {
       MessageBox("Error.");
     }
   });
+}
+
+function ReOrderTime()
+{
+
 }
 
 function ChangeDate(id)

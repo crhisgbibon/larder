@@ -81,6 +81,6 @@
 
   <x-Recipes.controls :recipes="$recipes" :foods="$foods"></x-Recipes.controls>
 
-  <div id="messageBoxHolder"><div id="messageBox"></div></div>
+  <div id="messageBoxHolder"><div id="messageBox" style='display:none;'></div></div>
 
 </x-app-layout>

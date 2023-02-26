@@ -25,8 +25,6 @@ return new class extends Migration
             $table->float('fibre');
             $table->float('salt');
             $table->float('alcohol');
-
-            $table->timestamps();
         });
     }
 

@@ -324,6 +324,7 @@
 
     if(stat === "Nutrients")
     {
+      console.log(chartdata['nutrients']);
       if(chartdata['nutrients'] === null || chartdata['nutrients'] === undefined) return;
       let d = chartdata['nutrients'];
       let days = d['days'];
@@ -346,7 +347,8 @@
       });
       info1 = targets.map(row => row.total);
       let temp = [0, 0, 0, 0, 0, 0, 0, 0];
-      for(let i = 0; i < days2.length; i++)
+      let dayLen = days2.length;
+      for(let i = 0; i < dayLen; i++)
       {
         temp[0] += days2[i]['carbohydrate'];
         temp[1] += days2[i]['sugar'];
@@ -356,6 +358,10 @@
         temp[5] += days2[i]['fibre'];
         temp[6] += days2[i]['salt'];
         temp[7] += days2[i]['alcohol'];
+      }
+      for(let i = 0; i < temp.length; i++)
+      {
+        temp[i] /= dayLen;
       }
       info2 = temp;
     }

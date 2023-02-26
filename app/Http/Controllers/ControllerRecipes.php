@@ -42,8 +42,10 @@ class ControllerRecipes extends Controller
   {
     $name = (string)$request->data[0];
     $servings = (float)$request->data[1];
-    $ingredients = (array)$request->data[2];
-    $instructions = (array)$request->data[3];
+    if(isset($request->data[2])) $ingredients = (array)$request->data[2];
+    else $ingredients = [];
+    if(isset($request->data[3])) $instructions = (array)$request->data[3];
+    else $instructions = [];
     $model = new ModelRecipes();
     $model->AddNewRecipe($name, $servings, $ingredients, $instructions);
     return $this->GetRecipesDataView();

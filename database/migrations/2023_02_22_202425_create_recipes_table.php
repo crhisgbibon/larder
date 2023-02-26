@@ -20,9 +20,9 @@ return new class extends Migration
 
             $table->string('name', 250);
             $table->float('servings');
+            $table->float('per');
+            $table->integer('expiry');
             $table->boolean('hiddenRow');
-
-            $table->timestamps();
         });
     }
 

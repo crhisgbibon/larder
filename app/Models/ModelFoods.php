@@ -19,6 +19,7 @@ class ModelFoods extends Model
     $id = Auth::user()->id;
     return $foods = DB::table('foods')
     ->where('userID', '=', $id)
+    ->where('id', '=', $index)
     ->where('hiddenRow', '=', 0)
     ->first();
   }

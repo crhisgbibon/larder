@@ -36,6 +36,7 @@ class ModelUser extends Model
   {
     $id = Auth::user()->id;
     return $profiles = DB::table('nutrient_goals')
+    ->select('userID', 'carbohydrate', 'fat', 'saturated', 'protein', 'fibre', 'salt', 'alcohol')
     ->where('userID', '=', $id)
     ->first();
   }
@@ -225,7 +226,9 @@ class ModelUser extends Model
     ->join('foods', 'logs.itemID', '=', 'foods.id')
     ->select(
       'logs.logTime',
+      'logs.amount',
       'foods.calories',
+      'foods.per',
     )
     ->where('logs.userID', '=', $id)
     ->where('logs.hiddenRow', '=', 0)
@@ -238,7 +241,7 @@ class ModelUser extends Model
       $day = date("y-m-d", $log->logTime);
       if(array_key_exists($day, $days))
       {
-        $days[$day]['calories'] += $log->calories;
+        $days[$day]['calories'] += ( ( $log->calories / $log->per ) * $log->amount );
       }
       else
       {
@@ -252,7 +255,7 @@ class ModelUser extends Model
         if( $week < $log->logTime ) $days[$day]['period'] = "WEEK";
 
         $days[$day]['day'] = date("y-m-d", $log->logTime);
-        $days[$day]['calories'] += $log->calories;
+        $days[$day]['calories'] += ( ( $log->calories / $log->per ) * $log->amount );
       }
     }
     $days = json_decode(json_encode($days), true);
@@ -328,8 +331,10 @@ class ModelUser extends Model
     $logTimes = DB::table('logs')
     ->join('foods', 'logs.itemID', '=', 'foods.id')
     ->select(
-      'logTime',
+      'logs.logTime',
+      'logs.amount',
       'foods.price',
+      'foods.weight',
     )
     ->where('logs.userID', '=', $id)
     ->where('logs.hiddenRow', '=', 0)
@@ -342,13 +347,13 @@ class ModelUser extends Model
       $day = date("y-m-d", $log->logTime);
       if(array_key_exists($day, $days))
       {
-        $days[$day]['price'] += $log->price;
+        $days[$day]['price'] += ( ( $log->price / $log->weight ) * $log->amount );
       }
       else
       {
         $days[$day]['price'] = 0;
         $days[$day]['day'] = $day;
-        $days[$day]['price'] += $log->price;
+        $days[$day]['price'] += ( ( $log->price / $log->weight ) * $log->amount );
 
         $days[$day]['period'] = "FOREVER";
         if( $decade < $log->logTime ) $days[$day]['period'] = "DECADE";
@@ -398,7 +403,9 @@ class ModelUser extends Model
     $logTimes = DB::table('logs')
     ->join('foods', 'logs.itemID', '=', 'foods.id')
     ->select(
-      'logTime',
+      'logs.logTime',
+      'logs.amount',
+      'foods.per',
       'foods.carbohydrate',
       'foods.sugar',
       'foods.fat',
@@ -419,14 +426,14 @@ class ModelUser extends Model
       $day = date("y-m-d", $log->logTime);
       if(array_key_exists($day, $days))
       {
-        $days[$day]['carbohydrate'] += $log->carbohydrate;
-        $days[$day]['sugar'] += $log->sugar;
-        $days[$day]['fat'] += $log->fat;
-        $days[$day]['saturated'] += $log->saturated;
-        $days[$day]['protein'] += $log->protein;
-        $days[$day]['fibre'] += $log->fibre;
-        $days[$day]['salt'] += $log->salt;
-        $days[$day]['alcohol'] += $log->alcohol;
+        $days[$day]['carbohydrate'] += ( ( $log->carbohydrate / $log->per ) * $log->amount );
+        $days[$day]['sugar'] += ( ( $log->sugar / $log->per ) * $log->amount );
+        $days[$day]['fat'] += ( ( $log->fat / $log->per ) * $log->amount );
+        $days[$day]['saturated'] += ( ( $log->saturated / $log->per ) * $log->amount );
+        $days[$day]['protein'] += ( ( $log->protein / $log->per ) * $log->amount );
+        $days[$day]['fibre'] += ( ( $log->fibre / $log->per ) * $log->amount );
+        $days[$day]['salt'] += ( ( $log->salt / $log->per ) * $log->amount );
+        $days[$day]['alcohol'] += ( ( $log->alcohol / $log->per ) * $log->amount );
       }
       else
       {
@@ -441,14 +448,14 @@ class ModelUser extends Model
 
         $days[$day]['day'] = $day;
 
-        $days[$day]['carbohydrate'] += $log->carbohydrate;
-        $days[$day]['sugar'] += $log->sugar;
-        $days[$day]['fat'] += $log->fat;
-        $days[$day]['saturated'] += $log->saturated;
-        $days[$day]['protein'] += $log->protein;
-        $days[$day]['fibre'] += $log->fibre;
-        $days[$day]['salt'] += $log->salt;
-        $days[$day]['alcohol'] += $log->alcohol;
+        $days[$day]['carbohydrate'] += ( ( $log->carbohydrate / $log->per ) * $log->amount );
+        $days[$day]['sugar'] += ( ( $log->sugar / $log->per ) * $log->amount );
+        $days[$day]['fat'] += ( ( $log->fat / $log->per ) * $log->amount );
+        $days[$day]['saturated'] += ( ( $log->saturated / $log->per ) * $log->amount );
+        $days[$day]['protein'] += ( ( $log->protein / $log->per ) * $log->amount );
+        $days[$day]['fibre'] += ( ( $log->fibre / $log->per ) * $log->amount );
+        $days[$day]['salt'] += ( ( $log->salt / $log->per ) * $log->amount );
+        $days[$day]['alcohol'] += ( ( $log->alcohol / $log->per ) * $log->amount );
 
         $days[$day]['period'] = "FOREVER";
         if( $decade < $log->logTime ) $days[$day]['period'] = "DECADE";

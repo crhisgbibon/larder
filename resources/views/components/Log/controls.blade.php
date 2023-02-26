@@ -8,18 +8,18 @@
   <button class="w-12 my-2 flex justify-center items-center" id="nextdaybutton">
     <img src="{{ asset('storage/Assets/chevronRightLight.svg') }}" style="width:75%;height:75%;max-width:30px;max-height:30px">
   </button>
-  <x-primary-button class="mx-2 p-2 flex justify-center items-center" id="Breakdown">
+  <x-secondary-button class="mx-2 p-2 flex justify-center items-center w-32" id="Breakdown">
     <?php if(isset($totals['calories'])) echo number_format($totals['calories'], 2); ?>
-  </x-primary-button>
+  </x-secondary-button>
 </div>
 
-<div id="Display" class="overflow-y-auto" style="height:calc(var(--vh) * 75)">
+<div id="Display" class="overflow-y-auto" style="min-height:calc(var(--vh) * 85);max-height:calc(var(--vh) * 85);top:calc(var(--vh) * 15)">
   @isset($logs)
     <x-Log.data :logs="$logs" :targets="$targets" :profile="$profile"></x-Log.data>
   @endisset
 </div>
 
-<div id="BreakdownScreen">
+<div id="BreakdownScreen" style="min-height:calc(var(--vh) * 85);top:calc(var(--vh) * 15)">
 
   <div class="my-2 w-full max-w-xl flex justify-center items-center font-bold">{{ __('Summary') }}</div>
 

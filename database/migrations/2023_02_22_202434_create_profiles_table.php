@@ -23,8 +23,6 @@ return new class extends Migration
             $table->float('caloryBurn');
 
             $table->float('caloryGoal');
-
-            $table->timestamps();
         });
     }
 

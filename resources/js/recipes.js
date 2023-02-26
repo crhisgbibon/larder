@@ -56,8 +56,6 @@ ToggleFoods.onclick = function(){ SwitchView(IngredientViews, 0); };
 ToggleRecipes.onclick = function(){ SwitchView(IngredientViews, 1); };
 
 // Startup
-TogglePanel(messageBox);
-TogglePanel(NewEntry);
 SwitchView(NewViews, 0);
 SwitchView(IngredientViews, 0);
 
@@ -310,6 +308,8 @@ function AddNewItem()
     instructions,
   ];
 
+  console.log(data);
+
   $.ajax(
   {
     method: "POST",
@@ -324,12 +324,14 @@ function AddNewItem()
     },
     success:function(result)
     {
+      console.log(result);
       Display.innerHTML = result;
       TogglePanel(NewEntry);
       ReAssign();
     },
-    error:function(rsult)
+    error:function(result)
     {
+      console.log(result);
     }
   });
 }
@@ -549,7 +551,7 @@ function AddInstruction()
   inputTime.type = "number";
   inputTime.min = 0;
   inputTime.step = 0.1;
-  inputTime.style = "min-height:30px";
+  inputTime.style = "min-height:70px";
   inputTime.className = "w-16";
   inputTime.id = num + "instructionTimer";
 

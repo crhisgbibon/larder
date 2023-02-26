@@ -19,8 +19,6 @@ return new class extends Migration
             $table->float('weight');
 
             $table->boolean('hiddenRow');
-
-            $table->timestamps();
         });
     }
 

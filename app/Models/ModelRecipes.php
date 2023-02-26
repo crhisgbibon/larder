@@ -17,7 +17,7 @@ class ModelRecipes extends Model
   public function GetRecipes()
   {
     $id = Auth::user()->id;
-    return $stacks = DB::table('recipes')
+    return $recipes = DB::table('recipes')
     ->where('userID', '=', $id)
     ->where('hiddenRow', '=', 0)
     ->orderBy('name', 'asc')
@@ -27,7 +27,7 @@ class ModelRecipes extends Model
   public function GetFoods()
   {
     $id = Auth::user()->id;
-    return $stacks = DB::table('foods')
+    return $foods = DB::table('foods')
     ->where('userID', '=', $id)
     ->where('hiddenRow', '=', 0)
     ->orderBy('name', 'asc')

@@ -11,13 +11,13 @@
 
 </div>
 
-<div id="Display" class="overflow-y-scroll" style="height:calc(var(--vh) * 77)">
+<div id="Display" class="overflow-y-scroll" style="min-height:calc(var(--vh) * 85);top:calc(var(--vh) * 15)">
   @isset($recipes)
     <x-Recipes.data :recipes="$recipes" :foods="$foods"></x-Recipes.data>
   @endisset
 </div>
 
-<div id="NewEntry">
+<div id="NewEntry" style="min-height:calc(var(--vh) * 85);top:calc(var(--vh) * 15);display:none;">
 
   <div class="my-2 w-full max-w-xl flex justify-center items-center font-bold">{{ __('New Recipe') }}</div>
 
@@ -101,6 +101,14 @@
     </div>
 
     <div class="w-full max-w-sm overflow-y-auto flex flex-col justify-start items-center border border-zinc-300 rounded-lg p-2" id="FoodList" style="max-height:calc(var(--vh) * 75)">
+      <div class="flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)">
+        <div class="w-64 truncate p-2 mx-2 rounded-lg">
+          {{ __('Name') }}
+        </div>
+        <div class="w-24 h-10/12 p-2 mx-2 text-center">
+          {{ __('Amount(g)') }}
+        </div>
+      </div>
       @foreach($foods as $food)
         <div class="flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)">
           <div class="toggleFood w-64 truncate p-2 mx-2 rounded-lg" 
@@ -114,6 +122,14 @@
     </div>
 
     <div class="w-full max-w-sm overflow-y-auto flex flex-col justify-start items-center border border-zinc-300 rounded-lg p-2" id="RecipeList" style="max-height:calc(var(--vh) * 75)">
+      <div class="flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)">
+        <div class="w-64 truncate p-2 mx-2 rounded-lg">
+          {{ __('Name') }}
+        </div>
+        <div class="w-24 h-10/12 p-2 mx-2 text-center">
+          {{ __('Amount(g)') }}
+        </div>
+      </div>
       @foreach($recipes as $recipe)
         <div class="flex flex-row justify-evenly items-center w-full my-2 p-2" style="max-height:calc(var(--vh) * 5)">
           <div class="toggleRecipe w-64 truncate p-2 mx-2 rounded-lg" data-index={{$recipe->id}}>
@@ -136,7 +152,7 @@
       <div class="w-full flex flex-row justify-evenly items-start p-2" id="1instructionBox">
         <div class="w-16">{{ __('1.') }}</div>
         <textarea class="instructionText px-2 mx-2 w-full" style="min-height:70px" id="1instruction"></textarea>
-        <input type="number" min="0" step="0.1" style="min-height:30px" class="w-16" id="1instructionTimer">
+        <input type="number" min="0" step="0.1" style="min-height:70px" class="w-16" id="1instructionTimer">
       </div>
     </div>
     <div class="w-full flex flex-row justify-evenly items-center p-2">

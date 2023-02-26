@@ -4,7 +4,7 @@
 
 @foreach($logs as $log)
 
-<div class="flex flex-col justify-center items-center w-full max-w-2xl mx-auto my-2">
+<div class="logitem flex flex-col justify-center items-center w-full max-w-2xl mx-auto my-2" id={{$log->id}} data-time={{date("H:i", $log->logTime)}}>
 
   <div class="flex flex-col justify-center items-center w-full max-w-2xl mx-auto">
     <div class="flex flex-row justify-center items-center w-full mx-2 bg-zinc-100 border-y md:border-x border-zinc-400">
