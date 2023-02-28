@@ -1,3 +1,3 @@
-# <a href='https://larda.xyz/login'>Larder</a>
+# larder
 
 <p>Calory counting tool made with Laravel/MySql.</p>
